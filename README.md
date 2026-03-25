@@ -7,7 +7,10 @@
 
 `insta-cut`은 서버 업로드 없이 브라우저에서 즉시 실행되는 고성능 MP4 편집 도구입니다. **FFmpeg.wasm**을 사용하여 모든 영상 처리가 사용자의 로컬 환경에서 이루어지므로, 데이터 유출 걱정 없이 안전하고 빠르게 영상을 자를 수 있습니다.
 
-[**🚀 Live Demo 바로가기**](https://jkh-ml.github.io/insta-cut/)
+[**🚀 Live Demo 바로가기**](https://jkh-ml.github.io/insta-cut/){:target="_blank"}
+
+또는 HTML 형식을 지원하는 경우:
+<a href="https://jkh-ml.github.io/insta-cut/" target="_blank">**🚀 Live Demo 바로가기**</a>
 
 ---
 
