@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Crop | Online MP4 Video Editor</title>
+    <script src="coi-serviceworker.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.0/dist/ffmpeg.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Video Editor</h1>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Trim</a>
+                <a href="crop.html" class="nav-link active">Crop</a>
+            </nav>
+            <div id="status" class="status-badge">FFmpeg initializing...</div>
+        </header>
+        
+        <main>
+            <section class="upload-area" id="drop-zone">
+                <input type="file" id="uploader" accept="video/mp4" class="hidden">
+                <div class="upload-content">
+                    <span class="upload-icon">↑</span>
+                    <p class="upload-label">Click or drag to upload video for cropping</p>
+                </div>
+            </section>
+
+            <section id="editor-container" class="editor-main hidden">
+                <!-- Preview Card -->
+                <div class="card video-preview-card">
+                    <div class="card-content">
+                        <div class="video-wrapper" id="video-wrapper">
+                            <video id="video-preview" controls></video>
+                            <div id="crop-overlay" class="crop-overlay">
+                                <div id="crop-box" class="crop-box">
+                                    <div class="crop-handle nw"></div>
+                                    <div class="crop-handle ne"></div>
+                                    <div class="crop-handle sw"></div>
+                                    <div class="crop-handle se"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="current-info">
+                            <span id="video-res-val" class="time-val">0 x 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls-grid">
+                    <!-- Crop Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Crop Settings</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="input-grid">
+                                <div class="input-box">
+                                    <label>X Offset</label>
+                                    <input type="number" id="crop-x" value="0">
+                                </div>
+                                <div class="input-box">
+                                    <label>Y Offset</label>
+                                    <input type="number" id="crop-y" value="0">
+                                </div>
+                                <div class="input-box">
+                                    <label>Width</label>
+                                    <input type="number" id="crop-w" value="0">
+                                </div>
+                                <div class="input-box">
+                                    <label>Height</label>
+                                    <input type="number" id="crop-h" value="0">
+                                </div>
+                            </div>
+
+                            <div class="button-group">
+                                <button id="reset-crop-btn" class="btn-outline">Reset to Full</button>
+                                <button id="preset-16-9" class="btn-outline">16:9</button>
+                                <button id="preset-9-16" class="btn-outline">9:16</button>
+                                <button id="preset-1-1" class="btn-outline">1:1</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Actions</h3>
+                        </div>
+                        <div class="card-content action-card-content">
+                            <button id="export-btn" class="btn-primary btn-full">Export Cropped Video</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress -->
+                <div id="progress-container" class="progress-section hidden">
+                    <div class="progress-info">
+                        <span id="progress-text">Processing...</span>
+                        <span id="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                </div>
+
+                <!-- Download -->
+                <div id="download-container" class="download-section hidden">
+                    <a id="download-link" href="#" download="cropped.mp4" class="btn-download">Download Result</a>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="crop.js"></script>
+</body>
+</html>

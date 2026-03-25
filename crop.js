@@ -1,0 +1,253 @@
+const { createFFmpeg, fetchFile } = FFmpeg;
+
+const ffmpeg = createFFmpeg({ 
+    log: true,
+    corePath: 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js'
+});
+
+const elements = {
+    uploader: document.getElementById('uploader'),
+    videoPreview: document.getElementById('video-preview'),
+    editorContainer: document.getElementById('editor-container'),
+    status: document.getElementById('status'),
+    exportBtn: document.getElementById('export-btn'),
+    progressContainer: document.getElementById('progress-container'),
+    progressFill: document.getElementById('progress-fill'),
+    progressText: document.getElementById('progress-text'),
+    progressPercent: document.getElementById('progress-percent'),
+    downloadContainer: document.getElementById('download-container'),
+    downloadLink: document.getElementById('download-link'),
+    dropZone: document.getElementById('drop-zone'),
+    videoResVal: document.getElementById('video-res-val'),
+    cropX: document.getElementById('crop-x'),
+    cropY: document.getElementById('crop-y'),
+    cropW: document.getElementById('crop-w'),
+    cropH: document.getElementById('crop-h'),
+    cropBox: document.getElementById('crop-box'),
+    videoWrapper: document.getElementById('video-wrapper'),
+    resetBtn: document.getElementById('reset-crop-btn'),
+    p169: document.getElementById('preset-16-9'),
+    p916: document.getElementById('preset-9-16'),
+    p11: document.getElementById('preset-1-1')
+};
+
+let videoFile = null;
+let isFFmpegLoaded = false;
+let originalWidth = 0;
+let originalHeight = 0;
+
+async function initFFmpeg() {
+    try {
+        elements.status.innerText = 'FFmpeg 엔진 로딩 중...';
+        await ffmpeg.load();
+        isFFmpegLoaded = true;
+        elements.status.innerText = '준비 완료: 파일을 선택하세요.';
+    } catch (error) {
+        elements.status.innerText = '엔진 로드 실패: ' + error.message;
+    }
+}
+
+initFFmpeg();
+
+async function handleFile(file) {
+    if (!file) return;
+    videoFile = file;
+    const url = URL.createObjectURL(file);
+    elements.videoPreview.src = url;
+    elements.editorContainer.classList.remove('hidden');
+    elements.dropZone.classList.add('hidden');
+    
+    elements.videoPreview.onloadedmetadata = () => {
+        originalWidth = elements.videoPreview.videoWidth;
+        originalHeight = elements.videoPreview.videoHeight;
+        elements.videoResVal.innerText = `${originalWidth} x ${originalHeight}`;
+        resetCrop();
+    };
+}
+
+function resetCrop() {
+    elements.cropX.value = 0;
+    elements.cropY.value = 0;
+    elements.cropW.value = originalWidth;
+    elements.cropH.value = originalHeight;
+    updateCropBoxFromInputs();
+}
+
+function updateCropBoxFromInputs() {
+    const vw = elements.videoPreview.clientWidth;
+    const vh = elements.videoPreview.clientHeight;
+    const scaleX = vw / originalWidth;
+    const scaleY = vh / originalHeight;
+
+    elements.cropBox.style.left = (parseInt(elements.cropX.value) * scaleX) + 'px';
+    elements.cropBox.style.top = (parseInt(elements.cropY.value) * scaleY) + 'px';
+    elements.cropBox.style.width = (parseInt(elements.cropW.value) * scaleX) + 'px';
+    elements.cropBox.style.height = (parseInt(elements.cropH.value) * scaleY) + 'px';
+}
+
+function updateInputsFromCropBox() {
+    const vw = elements.videoPreview.clientWidth;
+    const vh = elements.videoPreview.clientHeight;
+    const scaleX = originalWidth / vw;
+    const scaleY = originalHeight / vh;
+
+    elements.cropX.value = Math.round(elements.cropBox.offsetLeft * scaleX);
+    elements.cropY.value = Math.round(elements.cropBox.offsetTop * scaleY);
+    elements.cropW.value = Math.round(elements.cropBox.offsetWidth * scaleX);
+    elements.cropH.value = Math.round(elements.cropBox.offsetHeight * scaleY);
+}
+
+// Draggable Crop Box
+let isDragging = false;
+let isResizing = false;
+let currentHandle = null;
+let startX, startY, startLeft, startTop, startWidth, startHeight;
+
+elements.cropBox.onmousedown = (e) => {
+    if (e.target.classList.contains('crop-handle')) {
+        isResizing = true;
+        currentHandle = e.target;
+    } else {
+        isDragging = true;
+    }
+    startX = e.clientX;
+    startY = e.clientY;
+    startLeft = elements.cropBox.offsetLeft;
+    startTop = elements.cropBox.offsetTop;
+    startWidth = elements.cropBox.offsetWidth;
+    startHeight = elements.cropBox.offsetHeight;
+    e.preventDefault();
+};
+
+window.onmousemove = (e) => {
+    if (!isDragging && !isResizing) return;
+
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    const vw = elements.videoPreview.clientWidth;
+    const vh = elements.videoPreview.clientHeight;
+
+    if (isDragging) {
+        let newLeft = Math.max(0, Math.min(vw - startWidth, startLeft + dx));
+        let newTop = Math.max(0, Math.min(vh - startHeight, startTop + dy));
+        elements.cropBox.style.left = newLeft + 'px';
+        elements.cropBox.style.top = newTop + 'px';
+    } else if (isResizing) {
+        if (currentHandle.classList.contains('se')) {
+            elements.cropBox.style.width = Math.max(10, Math.min(vw - startLeft, startWidth + dx)) + 'px';
+            elements.cropBox.style.height = Math.max(10, Math.min(vh - startTop, startHeight + dy)) + 'px';
+        } else if (currentHandle.classList.contains('sw')) {
+            let newWidth = Math.max(10, Math.min(startLeft + startWidth, startWidth - dx));
+            elements.cropBox.style.left = (startLeft + startWidth - newWidth) + 'px';
+            elements.cropBox.style.width = newWidth + 'px';
+            elements.cropBox.style.height = Math.max(10, Math.min(vh - startTop, startHeight + dy)) + 'px';
+        } else if (currentHandle.classList.contains('ne')) {
+            elements.cropBox.style.width = Math.max(10, Math.min(vw - startLeft, startWidth + dx)) + 'px';
+            let newHeight = Math.max(10, Math.min(startTop + startHeight, startHeight - dy));
+            elements.cropBox.style.top = (startTop + startHeight - newHeight) + 'px';
+            elements.cropBox.style.height = newHeight + 'px';
+        } else if (currentHandle.classList.contains('nw')) {
+            let newWidth = Math.max(10, Math.min(startLeft + startWidth, startWidth - dx));
+            elements.cropBox.style.left = (startLeft + startWidth - newWidth) + 'px';
+            elements.cropBox.style.width = newWidth + 'px';
+            let newHeight = Math.max(10, Math.min(startTop + startHeight, startHeight - dy));
+            elements.cropBox.style.top = (startTop + startHeight - newHeight) + 'px';
+            elements.cropBox.style.height = newHeight + 'px';
+        }
+    }
+    updateInputsFromCropBox();
+};
+
+window.onmouseup = () => {
+    isDragging = false;
+    isResizing = false;
+};
+
+// Presets
+elements.p169.onclick = () => {
+    const h = originalWidth * (9/16);
+    if (h <= originalHeight) {
+        elements.cropW.value = originalWidth;
+        elements.cropH.value = Math.round(h);
+    } else {
+        elements.cropH.value = originalHeight;
+        elements.cropW.value = Math.round(originalHeight * (16/9));
+    }
+    elements.cropX.value = Math.round((originalWidth - elements.cropW.value) / 2);
+    elements.cropY.value = Math.round((originalHeight - elements.cropH.value) / 2);
+    updateCropBoxFromInputs();
+};
+
+elements.p916.onclick = () => {
+    const w = originalHeight * (9/16);
+    if (w <= originalWidth) {
+        elements.cropH.value = originalHeight;
+        elements.cropW.value = Math.round(w);
+    } else {
+        elements.cropW.value = originalWidth;
+        elements.cropH.value = Math.round(originalWidth * (16/9));
+    }
+    elements.cropX.value = Math.round((originalWidth - elements.cropW.value) / 2);
+    elements.cropY.value = Math.round((originalHeight - elements.cropH.value) / 2);
+    updateCropBoxFromInputs();
+};
+
+elements.p11.onclick = () => {
+    const size = Math.min(originalWidth, originalHeight);
+    elements.cropW.value = size;
+    elements.cropH.value = size;
+    elements.cropX.value = Math.round((originalWidth - size) / 2);
+    elements.cropY.value = Math.round((originalHeight - size) / 2);
+    updateCropBoxFromInputs();
+};
+
+elements.resetBtn.onclick = resetCrop;
+
+elements.cropX.oninput = updateCropBoxFromInputs;
+elements.cropY.oninput = updateCropBoxFromInputs;
+elements.cropW.oninput = updateCropBoxFromInputs;
+elements.cropH.oninput = updateCropBoxFromInputs;
+
+elements.dropZone.onclick = () => elements.uploader.click();
+elements.uploader.onchange = (e) => handleFile(e.target.files[0]);
+
+elements.dropZone.ondragover = (e) => { e.preventDefault(); elements.dropZone.classList.add('dragover'); };
+elements.dropZone.ondragleave = () => elements.dropZone.classList.remove('dragover');
+elements.dropZone.ondrop = (e) => {
+    e.preventDefault();
+    elements.dropZone.classList.remove('dragover');
+    handleFile(e.dataTransfer.files[0]);
+};
+
+elements.exportBtn.onclick = async () => {
+    if (!videoFile || !isFFmpegLoaded) return;
+    elements.exportBtn.disabled = true;
+    elements.progressContainer.classList.remove('hidden');
+    elements.downloadContainer.classList.add('hidden');
+
+    const x = elements.cropX.value;
+    const y = elements.cropY.value;
+    const w = elements.cropW.value;
+    const h = elements.cropH.value;
+
+    ffmpeg.setProgress(({ ratio }) => {
+        const p = Math.round(ratio * 100);
+        elements.progressFill.style.width = `${p}%`;
+        elements.progressPercent.innerText = `${p}%`;
+    });
+
+    try {
+        ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(videoFile));
+        // crop=w:h:x:y
+        await ffmpeg.run('-i', 'input.mp4', '-vf', `crop=${w}:${h}:${x}:${y}`, '-c:a', 'copy', 'output.mp4');
+        const data = ffmpeg.FS('readFile', 'output.mp4');
+        const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
+        elements.downloadLink.href = url;
+        elements.downloadContainer.classList.remove('hidden');
+        elements.progressText.innerText = '인코딩 완료!';
+    } catch (err) {
+        elements.progressText.innerText = '오류 발생: ' + err.message;
+    } finally {
+        elements.exportBtn.disabled = false;
+    }
+};

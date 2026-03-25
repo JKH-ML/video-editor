@@ -46,6 +46,32 @@ h1 {
     margin: 0 0 8px 0;
 }
 
+.nav-menu {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    transition: all 0.2s;
+}
+
+.nav-link:hover {
+    background-color: var(--secondary);
+    color: var(--foreground);
+}
+
+.nav-link.active {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+}
+
 .status-badge {
     font-size: 0.875rem;
     color: var(--muted-foreground);
@@ -118,8 +144,39 @@ h1 {
     margin: 0 auto;
     background: #000;
     border-radius: calc(var(--radius) - 2px);
+}
+
+.crop-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
     overflow: hidden;
 }
+
+.crop-box {
+    position: absolute;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+    pointer-events: auto;
+    cursor: move;
+    box-sizing: border-box;
+}
+
+.crop-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #fff;
+    border: 1px solid var(--primary);
+}
+
+.crop-handle.nw { top: -5px; left: -5px; cursor: nw-resize; }
+.crop-handle.ne { top: -5px; right: -5px; cursor: ne-resize; }
+.crop-handle.sw { bottom: -5px; left: -5px; cursor: sw-resize; }
+.crop-handle.se { bottom: -5px; right: -5px; cursor: se-resize; }
 
 #video-preview {
     display: block;
