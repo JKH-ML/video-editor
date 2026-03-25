@@ -29,7 +29,15 @@ const translations = {
         width_label: "너비",
         height_label: "높이",
         reset_btn: "전체 화면으로 초기화",
-        export_crop_btn: "크롭된 비디오 내보내기"
+        export_crop_btn: "크롭된 비디오 내보내기",
+        // New Features
+        transform_title: "변형 및 속도",
+        rotate_btn: "회전 (90°)",
+        flip_btn: "좌우 반전",
+        speed_label: "재생 속도",
+        mute_label: "음소거",
+        format_label: "내보내기 형식",
+        audio_extract_btn: "오디오만 추출 (MP3)"
     },
     en: {
         title: "Video Editor",
@@ -61,7 +69,15 @@ const translations = {
         width_label: "Width",
         height_label: "Height",
         reset_btn: "Reset to Full",
-        export_crop_btn: "Export Cropped Video"
+        export_crop_btn: "Export Cropped Video",
+        // New Features
+        transform_title: "Transform & Speed",
+        rotate_btn: "Rotate (90°)",
+        flip_btn: "Flip Horizontal",
+        speed_label: "Playback Speed",
+        mute_label: "Mute Audio",
+        format_label: "Export Format",
+        audio_extract_btn: "Extract Audio (MP3)"
     },
     zh: {
         title: "视频编辑器",
@@ -93,13 +109,21 @@ const translations = {
         width_label: "宽度",
         height_label: "高度",
         reset_btn: "重置为全屏",
-        export_crop_btn: "导出切边视频"
+        export_crop_btn: "导出切边视频",
+        // New Features
+        transform_title: "变换与速度",
+        rotate_btn: "旋转 (90°)",
+        flip_btn: "水平翻转",
+        speed_label: "播放速度",
+        mute_label: "静音",
+        format_label: "导出格式",
+        audio_extract_btn: "仅提取音频 (MP3)"
     },
     ja: {
         title: "ビデオエディター",
         home: "ホーム",
         repo: "GitHub リポジトリ",
-        meta_title: "オンライン MP4 ビデオエディター | 高速・安全なブラウザベースの編集ツール",
+        meta_title: "オンライン MP4 ビデオエ디ター | 高速・安全なブラウザベースの編集ツール",
         meta_description: "ブラウザ上で直接 MP4 ビデオをトリミング・クロップ。アップロード不要で 100% プライバシーが保護される FFmpeg ベースの編集器。",
         trim: "トリミング",
         crop: "クロップ",
@@ -120,12 +144,20 @@ const translations = {
         encoding_done: "エンコード完了！",
         download_btn: "結果をダウンロード",
         crop_settings_title: "クロップ設定",
-        x_offset: "X オフセット",
-        y_offset: "Y オフセット",
+        x_offset: "X オ프셋",
+        y_offset: "Y オ프셋",
         width_label: "幅",
         height_label: "高さ",
-        reset_btn: "フルサイズにリ셋",
-        export_crop_btn: "クロップしたビデオを書き出し"
+        reset_btn: "フルサイズにリセット",
+        export_crop_btn: "クロップしたビデオを書き出し",
+        // New Features
+        transform_title: "変形と速度",
+        rotate_btn: "回転 (90°)",
+        flip_btn: "左右反転",
+        speed_label: "再生速度",
+        mute_label: "ミュート",
+        format_label: "書き出し形式",
+        audio_extract_btn: "音声のみ抽出 (MP3)"
     }
 };
 
@@ -137,7 +169,6 @@ function setLanguage(lang) {
 function applyTranslations(lang) {
     const t = translations[lang];
     
-    // Update Title and Meta tags for SEO
     document.title = t.meta_title;
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) metaDesc.setAttribute('content', t.meta_description);

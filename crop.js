@@ -28,13 +28,32 @@ const elements = {
     resetBtn: document.getElementById('reset-crop-btn'),
     p169: document.getElementById('preset-16-9'),
     p916: document.getElementById('preset-9-16'),
-    p11: document.getElementById('preset-1-1')
+    p11: document.getElementById('preset-1-1'),
+    // New Elements
+    themeToggle: document.getElementById('theme-toggle'),
+    rotateBtn: document.getElementById('rotate-btn'),
+    flipBtn: document.getElementById('flip-btn'),
+    speedSelect: document.getElementById('speed-select'),
+    muteCheck: document.getElementById('mute-check'),
+    audioExtractBtn: document.getElementById('audio-extract-btn')
 };
 
 let videoFile = null;
 let isFFmpegLoaded = false;
 let originalWidth = 0;
 let originalHeight = 0;
+let rotation = 0;
+let isFlipped = false;
+
+// Theme Initialization
+if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-mode');
+}
+
+elements.themeToggle.onclick = () => {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+};
 
 async function initFFmpeg() {
     const lang = getCurrentLang();
@@ -97,6 +116,18 @@ function updateInputsFromCropBox() {
     elements.cropW.value = Math.round(elements.cropBox.offsetWidth * scaleX);
     elements.cropH.value = Math.round(elements.cropBox.offsetHeight * scaleY);
 }
+
+// Transform Handlers
+elements.rotateBtn.onclick = () => {
+    rotation = (rotation + 90) % 360;
+    elements.videoPreview.style.transform = `rotate(${rotation}deg) ${isFlipped ? 'scaleX(-1)' : ''}`;
+    // Re-adjust crop box after visual rotation if needed (complex, skipping visual sync for now as FFmpeg handles it)
+};
+
+elements.flipBtn.onclick = () => {
+    isFlipped = !isFlipped;
+    elements.videoPreview.style.transform = `rotate(${rotation}deg) ${isFlipped ? 'scaleX(-1)' : ''}`;
+};
 
 // Draggable Crop Box
 let isDragging = false;
@@ -220,17 +251,12 @@ elements.dropZone.ondrop = (e) => {
     handleFile(e.dataTransfer.files[0]);
 };
 
-elements.exportBtn.onclick = async () => {
-    if (!videoFile || !isFFmpegLoaded) return;
+async function runFFmpeg(args, outName) {
+    const lang = getCurrentLang();
     elements.exportBtn.disabled = true;
+    elements.audioExtractBtn.disabled = true;
     elements.progressContainer.classList.remove('hidden');
     elements.downloadContainer.classList.add('hidden');
-
-    const x = elements.cropX.value;
-    const y = elements.cropY.value;
-    const w = elements.cropW.value;
-    const h = elements.cropH.value;
-    const lang = getCurrentLang();
 
     ffmpeg.setProgress(({ ratio }) => {
         const p = Math.round(ratio * 100);
@@ -239,18 +265,64 @@ elements.exportBtn.onclick = async () => {
     });
 
     try {
-        elements.downloadLink.download = `output_crop.mp4`;
         ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(videoFile));
-        // crop=w:h:x:y
-        await ffmpeg.run('-i', 'input.mp4', '-vf', `crop=${w}:${h}:${x}:${y}`, '-c:a', 'copy', 'output.mp4');
-        const data = ffmpeg.FS('readFile', 'output.mp4');
-        const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
+        await ffmpeg.run(...args);
+        const data = ffmpeg.FS('readFile', outName);
+        const url = URL.createObjectURL(new Blob([data.buffer]));
         elements.downloadLink.href = url;
+        elements.downloadLink.download = outName;
         elements.downloadContainer.classList.remove('hidden');
         elements.progressText.innerText = translations[lang].encoding_done;
     } catch (err) {
         elements.progressText.innerText = translations[lang].status_error + err.message;
     } finally {
         elements.exportBtn.disabled = false;
+        elements.audioExtractBtn.disabled = false;
+    }
+}
+
+elements.audioExtractBtn.onclick = async () => {
+    if (!videoFile || !isFFmpegLoaded) return;
+    await runFFmpeg(['-i', 'input.mp4', '-vn', '-acodec', 'libmp3lame', 'output_audio.mp3'], 'output_audio.mp3');
+};
+
+elements.exportBtn.onclick = async () => {
+    if (!videoFile || !isFFmpegLoaded) return;
+    
+    const x = elements.cropX.value;
+    const y = elements.cropY.value;
+    const w = elements.cropW.value;
+    const h = elements.cropH.value;
+    const speed = parseFloat(elements.speedSelect.value);
+    const isMuted = elements.muteCheck.checked;
+    const format = document.querySelector('input[name="format"]:checked').value;
+
+    let videoFilters = [`crop=${w}:${h}:${x}:${y}`];
+    if (isFlipped) videoFilters.push('hflip');
+    if (rotation === 90) videoFilters.push('transpose=1');
+    else if (rotation === 180) videoFilters.push('transpose=1,transpose=1');
+    else if (rotation === 270) videoFilters.push('transpose=2');
+
+    if (speed !== 1.0) {
+        videoFilters.push(`setpts=${1/speed}*PTS`);
+    }
+
+    let args = ['-i', 'input.mp4'];
+    
+    if (format === 'gif') {
+        const vf = videoFilters.join(',') + ',';
+        args.push('-vf', `${vf}fps=10,scale=480:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse`, 'output_crop.gif');
+        await runFFmpeg(args, 'output_crop.gif');
+    } else {
+        args.push('-vf', videoFilters.join(','));
+        
+        if (isMuted) {
+            args.push('-an');
+        } else if (speed !== 1.0) {
+            args.push('-filter:a', `atempo=${speed}`);
+        }
+        
+        args.push('output_crop.mp4');
+        await runFFmpeg(args, 'output_crop.mp4');
     }
 };

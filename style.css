@@ -3,22 +3,108 @@
     --foreground: #09090b;
     --card: #ffffff;
     --card-foreground: #09090b;
-    --popover: #ffffff;
-    --popover-foreground: #09090b;
     --primary: #18181b;
     --primary-foreground: #fafafa;
     --secondary: #f4f4f5;
     --secondary-foreground: #18181b;
     --muted: #f4f4f5;
     --muted-foreground: #71717a;
-    --accent: #f4f4f5;
-    --accent-foreground: #18181b;
-    --destructive: #ef4444;
-    --destructive-foreground: #fafafa;
     --border: #e4e4e7;
     --input: #e4e4e7;
     --ring: #18181b;
     --radius: 0.5rem;
+}
+
+body.dark-mode {
+    --background: #09090b;
+    --foreground: #fafafa;
+    --card: #09090b;
+    --card-foreground: #fafafa;
+    --primary: #fafafa;
+    --primary-foreground: #18181b;
+    --secondary: #27272a;
+    --secondary-foreground: #fafafa;
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+    --border: #27272a;
+    --input: #27272a;
+    --ring: #d4d4d8;
+}
+
+body {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.theme-toggle {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--foreground);
+    font-size: 1.1rem;
+}
+
+.theme-toggle:hover {
+    background-color: var(--secondary);
+}
+
+.setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.setting-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.radio-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.radio-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.speed-select {
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--background);
+    color: var(--foreground);
+    font-size: 0.875rem;
+}
+
+.btn-group-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
 }
 
 body {

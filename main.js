@@ -27,12 +27,31 @@ const elements = {
     currentTimeVal: document.getElementById('current-time-val'),
     currentFrameVal: document.getElementById('current-frame-val'),
     captureFrameBtn: document.getElementById('capture-frame-btn'),
-    dropZone: document.getElementById('drop-zone')
+    dropZone: document.getElementById('drop-zone'),
+    // New Elements
+    themeToggle: document.getElementById('theme-toggle'),
+    rotateBtn: document.getElementById('rotate-btn'),
+    flipBtn: document.getElementById('flip-btn'),
+    speedSelect: document.getElementById('speed-select'),
+    muteCheck: document.getElementById('mute-check'),
+    audioExtractBtn: document.getElementById('audio-extract-btn')
 };
 
 let videoFile = null;
 let isFFmpegLoaded = false;
 let videoFPS = 30;
+let rotation = 0;
+let isFlipped = false;
+
+// Theme Initialization
+if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-mode');
+}
+
+elements.themeToggle.onclick = () => {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+};
 
 async function initFFmpeg() {
     const lang = getCurrentLang();
@@ -121,6 +140,17 @@ elements.setEndBtn.onclick = () => {
     updateTimelineVisual();
 };
 
+// Transform Handlers
+elements.rotateBtn.onclick = () => {
+    rotation = (rotation + 90) % 360;
+    elements.videoPreview.style.transform = `rotate(${rotation}deg) ${isFlipped ? 'scaleX(-1)' : ''}`;
+};
+
+elements.flipBtn.onclick = () => {
+    isFlipped = !isFlipped;
+    elements.videoPreview.style.transform = `rotate(${rotation}deg) ${isFlipped ? 'scaleX(-1)' : ''}`;
+};
+
 window.onkeydown = (e) => {
     if (!videoFile || document.activeElement.tagName === 'INPUT') return;
     let step = e.shiftKey ? 0.01 : 0.05;
@@ -159,15 +189,12 @@ elements.captureFrameBtn.onclick = () => {
     link.click();
 };
 
-elements.exportBtn.onclick = async () => {
-    if (!videoFile || !isFFmpegLoaded) return;
+async function runFFmpeg(args, outName) {
+    const lang = getCurrentLang();
     elements.exportBtn.disabled = true;
+    elements.audioExtractBtn.disabled = true;
     elements.progressContainer.classList.remove('hidden');
     elements.downloadContainer.classList.add('hidden');
-
-    const start = elements.startTime.value;
-    const end = elements.endTime.value;
-    const lang = getCurrentLang();
 
     ffmpeg.setProgress(({ ratio }) => {
         const p = Math.round(ratio * 100);
@@ -176,17 +203,67 @@ elements.exportBtn.onclick = async () => {
     });
 
     try {
-        elements.downloadLink.download = `output_trim.mp4`;
         ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(videoFile));
-        await ffmpeg.run('-ss', start, '-to', end, '-i', 'input.mp4', '-c:v', 'copy', '-c:a', 'copy', 'output.mp4');
-        const data = ffmpeg.FS('readFile', 'output.mp4');
-        const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
+        await ffmpeg.run(...args);
+        const data = ffmpeg.FS('readFile', outName);
+        const url = URL.createObjectURL(new Blob([data.buffer]));
         elements.downloadLink.href = url;
+        elements.downloadLink.download = outName;
         elements.downloadContainer.classList.remove('hidden');
         elements.progressText.innerText = translations[lang].encoding_done;
     } catch (err) {
         elements.progressText.innerText = translations[lang].status_error + err.message;
     } finally {
         elements.exportBtn.disabled = false;
+        elements.audioExtractBtn.disabled = false;
+    }
+}
+
+elements.audioExtractBtn.onclick = async () => {
+    if (!videoFile || !isFFmpegLoaded) return;
+    const start = elements.startTime.value;
+    const end = elements.endTime.value;
+    await runFFmpeg(['-ss', start, '-to', end, '-i', 'input.mp4', '-vn', '-acodec', 'libmp3lame', 'output_audio.mp3'], 'output_audio.mp3');
+};
+
+elements.exportBtn.onclick = async () => {
+    if (!videoFile || !isFFmpegLoaded) return;
+    
+    const start = elements.startTime.value;
+    const end = elements.endTime.value;
+    const speed = parseFloat(elements.speedSelect.value);
+    const isMuted = elements.muteCheck.checked;
+    const format = document.querySelector('input[name="format"]:checked').value;
+
+    let videoFilters = [];
+    if (isFlipped) videoFilters.push('hflip');
+    if (rotation === 90) videoFilters.push('transpose=1');
+    else if (rotation === 180) videoFilters.push('transpose=1,transpose=1');
+    else if (rotation === 270) videoFilters.push('transpose=2');
+
+    if (speed !== 1.0) {
+        videoFilters.push(`setpts=${1/speed}*PTS`);
+    }
+
+    let args = ['-ss', start, '-to', end, '-i', 'input.mp4'];
+    
+    if (format === 'gif') {
+        const vf = videoFilters.length > 0 ? videoFilters.join(',') + ',' : '';
+        args.push('-vf', `${vf}fps=10,scale=480:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse`, 'output_trim.gif');
+        await runFFmpeg(args, 'output_trim.gif');
+    } else {
+        if (videoFilters.length > 0) {
+            args.push('-vf', videoFilters.join(','));
+        }
+        
+        if (isMuted) {
+            args.push('-an');
+        } else if (speed !== 1.0) {
+            // Adjust audio speed to match video speed
+            args.push('-filter:a', `atempo=${speed}`);
+        }
+        
+        args.push('output_trim.mp4');
+        await runFFmpeg(args, 'output_trim.mp4');
     }
 };
