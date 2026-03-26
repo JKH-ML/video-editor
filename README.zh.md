@@ -7,9 +7,6 @@
 
 [English](README.md) | [한국어](README.ko.md) | [简体中文](README.zh.md) | [日本語](README.ja.md)
 
-[![GitHub license](https://img.shields.io/github/license/JKH-ML/insta-cut)](https://github.com/JKH-ML/insta-cut/blob/main/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/JKH-ML/insta-cut)](https://github.com/JKH-ML/insta-cut/stargazers)
-
 `insta-cut` 是一款高性能的 MP4 编辑工具，无需上传服务器，即可在浏览器中即时运行。基于 **FFmpeg.wasm**，所有视频处理都在用户的本地环境中完成，无需担心数据泄露，安全快速地裁剪视频。
 
 <div align="center">

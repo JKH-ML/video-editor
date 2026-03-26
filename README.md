@@ -7,9 +7,6 @@
 
 [English](README.md) | [한국어](README.ko.md) | [简体中文](README.zh.md) | [日本語](README.ja.md)
 
-[![GitHub license](https://img.shields.io/github/license/JKH-ML/insta-cut)](https://github.com/JKH-ML/insta-cut/blob/main/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/JKH-ML/insta-cut)](https://github.com/JKH-ML/insta-cut/stargazers)
-
 `insta-cut` is a high-performance MP4 editing tool that runs instantly in the browser without server uploads. Powered by **FFmpeg.wasm**, all video processing happens locally on your device, ensuring fast and secure editing without data leakage.
 
 <div align="center">
