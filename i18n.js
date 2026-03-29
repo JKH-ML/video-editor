@@ -7,11 +7,13 @@ const translations = {
         meta_description: "브라우저에서 직접 MP4 비디오를 자르고 크롭하세요. 서버 업로드 없이 100% 프라이버시가 보장되는 FFmpeg 기반 편집기입니다.",
         trim: "트림",
         crop: "크롭",
+        merge: "병합",
         status_init: "FFmpeg 엔진 로딩 중...",
         status_ready: "준비 완료: 파일을 선택하세요.",
         status_error: "엔진 로드 실패: ",
         upload_label: "클릭하거나 비디오를 드래그하세요",
         upload_label_crop: "크롭할 비디오를 클릭하거나 드래그하세요",
+        upload_label_merge: "병합할 비디오 파일들을 선택하세요 (여러 개 가능)",
         trim_card_title: "트림",
         start_label: "시작 (초)",
         end_label: "종료 (초)",
@@ -30,6 +32,11 @@ const translations = {
         height_label: "높이",
         reset_btn: "전체 화면으로 초기화",
         export_crop_btn: "크롭된 비디오 내보내기",
+        // Merge
+        merge_list_title: "병합할 파일 목록",
+        merge_btn: "비디오 병합하기",
+        clear_list_btn: "목록 비우기",
+        no_files_msg: "선택된 파일이 없습니다.",
         // New Features
         transform_title: "변형 및 속도",
         rotate_btn: "회전 (90°)",
@@ -70,6 +77,11 @@ const translations = {
         height_label: "Height",
         reset_btn: "Reset to Full",
         export_crop_btn: "Export Cropped Video",
+        // Merge
+        merge_list_title: "Video List for Merging",
+        merge_btn: "Merge Videos",
+        clear_list_btn: "Clear List",
+        no_files_msg: "No files selected.",
         // New Features
         transform_title: "Transform & Speed",
         rotate_btn: "Rotate (90°)",
@@ -110,6 +122,11 @@ const translations = {
         height_label: "高度",
         reset_btn: "重置为全屏",
         export_crop_btn: "导出切边视频",
+        // Merge
+        merge_list_title: "合并视频列表",
+        merge_btn: "合并视频",
+        clear_list_btn: "清除列表",
+        no_files_msg: "未选择文件。",
         // New Features
         transform_title: "变换与速度",
         rotate_btn: "旋转 (90°)",
@@ -150,6 +167,11 @@ const translations = {
         height_label: "高さ",
         reset_btn: "フルサイズにリセット",
         export_crop_btn: "クロップしたビデオを書き出し",
+        // Merge
+        merge_list_title: "結合するビデオリスト",
+        merge_btn: "ビデオを結合する",
+        clear_list_btn: "リストをクリア",
+        no_files_msg: "ファイルが選択されていません。",
         // New Features
         transform_title: "変形と速度",
         rotate_btn: "回転 (90°)",

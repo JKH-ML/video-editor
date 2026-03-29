@@ -21,6 +21,7 @@
 
 - **⚡ Serverless Encoding**: No video uploads to servers. Processing happens entirely within the browser.
 - **✂️ Precise Cut Editing**: Micro-adjustments in 0.01-second increments and frame-by-frame navigation.
+- **🔗 Video Merge**: Combine multiple MP4 files into one with custom reordering.
 - **🖼️ High-Quality Frame Capture**: Instantly extract any scene as a PNG image.
 - **⌨️ Keyboard Shortcut Support**: Efficient timeline control using arrow keys (←, →) and Spacebar.
 - **🎨 Modern UI/UX**: Minimalist and sophisticated design in shadcn/ui style.
@@ -44,6 +45,10 @@
     - `Trim and Save Video`: Cuts the selected section and downloads it as a new file.
 
 ## 🕒 Version History
+
+### [v1.4.0] - 2026-03-30
+- **🔗 Video Merge**: Added feature to merge multiple MP4 files with custom reordering.
+- **🗺️ Navigation Update**: Added Merge menu for seamless tool switching.
 
 ### [v1.3.0] - 2026-03-25
 - **🎞️ GIF Conversion**: Added feature to convert videos to high-quality GIF animations.
