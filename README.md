@@ -1,4 +1,4 @@
-# 🎬 insta-cut
+# 🎬 Video Editor
 
 **Fast, Private, and Browser-based MP4 Video Trimmer.**
 
@@ -7,10 +7,10 @@
 
 [English](README.md) | [한국어](README.ko.md) | [简体中文](README.zh.md) | [日本語](README.ja.md)
 
-`insta-cut` is a high-performance MP4 editing tool that runs instantly in the browser without server uploads. Powered by **FFmpeg.wasm**, all video processing happens locally on your device, ensuring fast and secure editing without data leakage.
+`Video Editor` is a high-performance MP4 editing tool that runs instantly in the browser without server uploads. Powered by **FFmpeg.wasm**, all video processing happens locally on your device, ensuring fast and secure editing without data leakage.
 
 <div align="center">
-  <a href="https://jkh-ml.github.io/insta-cut/" target="_blank" rel="noopener noreferrer">
+  <a href="https://jkh-ml.github.io/video-editor/" target="_blank" rel="noopener noreferrer">
     <img src="https://img.shields.io/badge/🚀%20Go%20to%20Live%20Demo-6366f1?style=for-the-badge&logoColor=white" alt="Live Demo">
   </a>
 </div>
@@ -20,9 +20,10 @@
 ## ✨ Key Features
 
 - **⚡ Serverless Encoding**: No video uploads to servers. Processing happens entirely within the browser.
-- **✂️ Precise Cut Editing**: Micro-adjustments in 0.01-second increments and frame-by-frame navigation.
-- **🔗 Video Merge**: Combine multiple MP4 files into one with custom reordering.
-- **🖼️ High-Quality Frame Capture**: Instantly extract any scene as a PNG image.
+- ✂️ **Precise Cut Editing**: Micro-adjustments in 0.01-second increments and frame-by-frame navigation.
+- 🔗 **Video Merge**: Combine multiple MP4 files into one with custom reordering.
+- 🔄 **Audio-Video Sync**: Automatically adjust video frame rate to match the exact length of an external audio file.
+- 🖼️ **High-Quality Frame Capture**: Instantly extract any scene as a PNG image.
 - **⌨️ Keyboard Shortcut Support**: Efficient timeline control using arrow keys (←, →) and Spacebar.
 - **🎨 Modern UI/UX**: Minimalist and sophisticated design in shadcn/ui style.
 - **🔒 Privacy Protection**: All work is completed locally, so you can edit sensitive videos with peace of mind.
@@ -45,6 +46,10 @@
     - `Trim and Save Video`: Cuts the selected section and downloads it as a new file.
 
 ## 🕒 Version History
+
+### [v1.5.0] - 2026-04-06
+- **🔄 Audio-Video Sync**: Added a new "Sync" tool to perfectly align video speed with external audio files.
+- **🗺️ Navigation Update**: Added Sync menu and refined the UI for multi-file operations.
 
 ### [v1.4.0] - 2026-03-30
 - **🔗 Video Merge**: Added feature to merge multiple MP4 files with custom reordering.

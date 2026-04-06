@@ -1,4 +1,4 @@
-# 🎬 insta-cut
+# 🎬 Video Editor
 
 **빠르고 안전한 브라우저 기반 MP4 비디오 트리머.**
 
@@ -7,10 +7,10 @@
 
 [English](README.md) | [한국어](README.ko.md) | [简体中文](README.zh.md) | [日本語](README.ja.md)
 
-`insta-cut`은 서버 업로드 없이 브라우저에서 즉시 실행되는 고성능 MP4 편집 도구입니다. **FFmpeg.wasm**을 사용하여 모든 영상 처리가 사용자의 로컬 환경에서 이루어지므로, 데이터 유출 걱정 없이 안전하고 빠르게 영상을 자를 수 있습니다.
+`Video Editor`는 서버 업로드 없이 브라우저에서 즉시 실행되는 고성능 MP4 편집 도구입니다. **FFmpeg.wasm**을 사용하여 모든 영상 처리가 사용자의 로컬 환경에서 이루어지므로, 데이터 유출 걱정 없이 안전하고 빠르게 영상을 자를 수 있습니다.
 
 <div align="center">
-  <a href="https://jkh-ml.github.io/insta-cut/" target="_blank" rel="noopener noreferrer">
+  <a href="https://jkh-ml.github.io/video-editor/" target="_blank" rel="noopener noreferrer">
     <img src="https://img.shields.io/badge/🚀%20Live%20Demo%20바로가기-6366f1?style=for-the-badge&logoColor=white" alt="Live Demo">
   </a>
 </div>
@@ -22,6 +22,7 @@
 - **⚡ 서버리스 인코딩**: 영상 파일을 서버에 업로드하지 않습니다. 브라우저 내부에서 즉시 처리됩니다.
 - **✂️ 초정밀 컷 편집**: 0.01초 단위의 미세 조절 및 프레임 단위 탐색이 가능합니다.
 - **🔗 비디오 병합**: 여러 개의 MP4 파일을 하나로 합치고 순서를 자유롭게 변경할 수 있습니다.
+- **🔄 오디오 동기화(Sync)**: 외부 오디오 파일의 길이에 맞춰 비디오 속도(FPS)를 자동으로 조정합니다.
 - **🖼️ 고화질 프레임 캡처**: 원하는 장면을 즉시 PNG 이미지로 추출합니다.
 - **⌨️ 키보드 단축키 지원**: 방향키(←, →)와 Space바를 이용한 효율적인 타임라인 제어.
 - **🎨 Modern UI/UX**: shadcn/ui 스타일의 미니멀하고 세련된 디자인.
@@ -45,6 +46,10 @@
     - `비디오 자르기 및 저장`: 설정한 구간을 잘라 새 파일로 다운로드합니다.
 
 ## 🕒 버전 관리 (Version History)
+
+### [v1.5.0] - 2026-04-06
+- **🔄 오디오 동기화**: 비디오 속도를 오디오 길이에 완벽하게 맞추는 '싱크' 도구 추가
+- **🗺️ 네비게이션 업데이트**: 싱크(Sync) 메뉴 추가 및 다중 파일 작업 UI 개선
 
 ### [v1.4.0] - 2026-03-30
 - **🔗 비디오 병합**: 여러 MP4 파일을 하나로 합치고 순서를 변경하는 기능 추가

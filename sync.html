@@ -3,87 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Merge | Online MP4 Video Editor</title>
+    <title>Video Audio Sync | Online MP4 Video Editor</title>
     <script src="coi-serviceworker.js"></script>
     <link rel="stylesheet" href="style.css">
     <script src="i18n.js"></script>
     <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.0/dist/ffmpeg.min.js"></script>
     <style>
-        .file-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .sync-upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
         }
-        .file-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
+        @media (max-width: 768px) {
+            .sync-upload-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .file-status-card {
+            padding: 16px;
             background: var(--secondary);
             border-radius: var(--radius);
-            margin-bottom: 8px;
+            margin-top: 12px;
             font-size: 0.875rem;
         }
-        .file-item.dragging {
-            opacity: 0.5;
-            background: var(--muted);
-            border: 2px dashed var(--primary);
-        }
-        .file-info {
+        .file-status-item {
             display: flex;
-            flex-direction: column;
-            gap: 2px;
-            overflow: hidden;
+            justify-content: space-between;
+            margin-bottom: 4px;
         }
-        .file-name {
+        .file-status-label {
+            color: var(--muted-foreground);
+        }
+        .file-status-value {
             font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
-        .file-size {
-            font-size: 0.75rem;
-            color: var(--muted-foreground);
-        }
-        .remove-file {
-            background: none;
-            border: none;
-            color: #ef4444;
-            cursor: pointer;
-            font-size: 1.25rem;
-            padding: 0 8px;
-        }
-        .file-controls {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .control-btn {
-            background: var(--background);
-            border: 1px solid var(--border);
-            color: var(--foreground);
-            border-radius: 4px;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 0.875rem;
-            padding: 0;
-        }
-        .control-btn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-        .control-btn:hover:not(:disabled) {
-            background: var(--secondary);
-        }
-        .empty-msg {
+        .sync-info-box {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 16px;
+            border-radius: var(--radius);
+            margin-top: 20px;
             text-align: center;
-            color: var(--muted-foreground);
-            padding: 20px;
-            font-size: 0.875rem;
+        }
+        .sync-info-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: block;
+            margin-top: 8px;
         }
     </style>
 </head>
@@ -108,46 +76,62 @@
             <nav class="nav-menu">
                 <a href="index.html" class="nav-link" data-i18n="trim">Trim</a>
                 <a href="crop.html" class="nav-link" data-i18n="crop">Crop</a>
-                <a href="merge.html" class="nav-link active" data-i18n="merge">Merge</a>
-                <a href="sync.html" class="nav-link" data-i18n="sync">Sync</a>
+                <a href="merge.html" class="nav-link" data-i18n="merge">Merge</a>
+                <a href="sync.html" class="nav-link active" data-i18n="sync">Sync</a>
             </nav>
             <div id="status" class="status-badge" data-i18n="status_init">FFmpeg initializing...</div>
         </header>
         
         <main>
-            <section class="upload-area" id="drop-zone">
-                <input type="file" id="uploader" accept="video/mp4" multiple class="hidden">
-                <div class="upload-content">
-                    <span class="upload-icon">↑</span>
-                    <p class="upload-label" data-i18n="upload_label_merge">Select MP4 files to merge (Multiple allowed)</p>
-                </div>
-            </section>
+            <div class="sync-upload-grid">
+                <!-- Video Upload -->
+                <section class="upload-area" id="drop-zone-video">
+                    <input type="file" id="video-uploader" accept="video/mp4" class="hidden">
+                    <div class="upload-content">
+                        <span class="upload-icon">🎬</span>
+                        <p class="upload-label" id="video-label" data-i18n="upload_label_sync_video">Select Video File</p>
+                        <div id="video-file-info" class="file-status-card hidden">
+                            <div class="file-status-item">
+                                <span class="file-status-label">Duration:</span>
+                                <span id="v-duration" class="file-status-value">-</span>
+                            </div>
+                            <div class="file-status-item">
+                                <span class="file-status-label">Total Frames:</span>
+                                <span id="v-frames" class="file-status-value">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Audio Upload -->
+                <section class="upload-area" id="drop-zone-audio">
+                    <input type="file" id="audio-uploader" accept="audio/*" class="hidden">
+                    <div class="upload-content">
+                        <span class="upload-icon">🎵</span>
+                        <p class="upload-label" id="audio-label" data-i18n="upload_label_sync_audio">Select Audio File</p>
+                        <div id="audio-file-info" class="file-status-card hidden">
+                            <div class="file-status-item">
+                                <span class="file-status-label">Duration:</span>
+                                <span id="a-duration" class="file-status-value">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
 
             <section id="editor-container" class="editor-main hidden">
                 <div class="controls-grid" style="grid-template-columns: 1fr;">
-                    <!-- Merge List Card -->
-                    <div class="card">
-                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                            <h3 class="card-title" data-i18n="merge_list_title">Merge List</h3>
-                            <button id="clear-list-btn" class="btn-outline" style="height: 28px; padding: 0 10px; font-size: 0.75rem;" data-i18n="clear_list_btn">Clear All</button>
-                        </div>
-                        <div class="card-content">
-                            <ul id="file-list" class="file-list">
-                                <!-- File items will be added here -->
-                            </ul>
-                            <div id="no-files-msg" class="empty-msg" data-i18n="no_files_msg">No files selected.</div>
-                            
-                            <button id="add-more-btn" class="btn-secondary btn-full" style="margin-top: 16px;">+ Add More Files</button>
-                        </div>
-                    </div>
-
-                    <!-- Actions Card -->
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title" data-i18n="actions_title">Actions</h3>
+                            <h3 class="card-title" data-i18n="sync_settings_title">Sync Settings</h3>
                         </div>
-                        <div class="card-content action-card-content">
-                            <button id="export-btn" class="btn-primary btn-full" data-i18n="merge_btn">Merge Videos</button>
+                        <div class="card-content">
+                            <div id="sync-calculation" class="sync-info-box">
+                                <span id="sync-msg">New calculated Frame Rate:</span>
+                                <span id="target-fps" class="sync-info-value">0.00 FPS</span>
+                            </div>
+                            
+                            <button id="export-btn" class="btn-primary btn-full" style="margin-top: 24px;" data-i18n="sync_btn" disabled>Sync Video Speed to Audio Length</button>
                         </div>
                     </div>
                 </div>
@@ -165,7 +149,7 @@
 
                 <!-- Download -->
                 <div id="download-container" class="download-section hidden">
-                    <a id="download-link" href="#" download="merged.mp4" class="btn-download" data-i18n="download_btn">Download Result</a>
+                    <a id="download-link" href="#" download="synced.mp4" class="btn-download" data-i18n="download_btn">Download Result</a>
                 </div>
             </section>
         </main>
@@ -184,6 +168,6 @@
             </div>
         </footer>
     </div>
-    <script src="merge.js"></script>
+    <script src="sync.js"></script>
 </body>
 </html>

@@ -172,7 +172,34 @@ footer {
     margin-top: 60px;
     padding-top: 24px;
     border-top: 1px solid var(--border);
-    text-align: center;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-footer-tool {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid var(--border);
+}
+
+.btn-footer-tool:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+    transform: translateY(-2px);
 }
 
 .btn-repo {
@@ -198,6 +225,17 @@ footer {
     width: 16px;
     height: 16px;
     fill: currentColor;
+}
+
+@media (max-width: 640px) {
+    .footer-links {
+        flex-direction: column;
+        width: 100%;
+    }
+    .btn-footer-tool, .btn-repo {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 h1 {
