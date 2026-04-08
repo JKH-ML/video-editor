@@ -6,8 +6,11 @@ const port = 3000;
 
 const server = http.createServer((req, res) => {
   let filePath = '.' + req.url;
-  if (filePath === './') {
-    filePath = './index.html';
+  if (filePath === './' || filePath.endsWith('/')) {
+    filePath += 'index.html';
+  } else if (!path.extname(filePath)) {
+    // If no extension and not ending with /, try adding /index.html
+    filePath += '/index.html';
   }
 
   const extname = String(path.extname(filePath)).toLowerCase();

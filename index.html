@@ -21,8 +21,8 @@
     <meta property="twitter:description" content="Fast, browser-based MP4 trimmer using FFmpeg.wasm.">
 
     <script src="coi-serviceworker.js"></script>
-    <link rel="stylesheet" href="style.css">
-    <script src="i18n.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/i18n.js"></script>
     <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.0/dist/ffmpeg.min.js"></script>
 </head>
 <body>
@@ -45,10 +45,10 @@
             </div>
             <nav class="nav-menu">
                 <a href="index.html" class="nav-link active" data-i18n="trim">Trim</a>
-                <a href="crop.html" class="nav-link" data-i18n="crop">Crop</a>
-                <a href="merge.html" class="nav-link" data-i18n="merge">Merge</a>
-                <a href="sync.html" class="nav-link" data-i18n="sync">Sync</a>
-                <a href="frames.html" class="nav-link" data-i18n="frames">Frames</a>
+                <a href="tools/crop/index.html" class="nav-link" data-i18n="crop">Crop</a>
+                <a href="tools/merge/index.html" class="nav-link" data-i18n="merge">Merge</a>
+                <a href="tools/sync/index.html" class="nav-link" data-i18n="sync">Sync</a>
+                <a href="tools/frames/index.html" class="nav-link" data-i18n="frames">Frames</a>
             </nav>
             <div id="status" class="status-badge" data-i18n="status_init">FFmpeg initializing...</div>
         </header>
@@ -194,6 +194,6 @@
             </div>
         </footer>
     </div>
-    <script src="main.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Merge | Online MP4 Video Editor</title>
-    <script src="coi-serviceworker.js"></script>
-    <link rel="stylesheet" href="style.css">
-    <script src="i18n.js"></script>
+    <script src="../../coi-serviceworker.js"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <script src="../../js/i18n.js"></script>
     <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.0/dist/ffmpeg.min.js"></script>
     <style>
         .file-list {
@@ -48,15 +48,19 @@
         .remove-file {
             background: none;
             border: none;
-            color: #ef4444;
+            color: var(--muted-foreground);
             cursor: pointer;
             font-size: 1.25rem;
-            padding: 0 8px;
+            line-height: 1;
+            padding: 4px;
+        }
+        .remove-file:hover {
+            color: var(--destructive);
         }
         .file-controls {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 8px;
         }
         .control-btn {
             background: var(--background);
@@ -92,7 +96,7 @@
         <header>
             <div class="header-top">
                 <div class="header-left">
-                    <a href="index.html" class="btn-home" title="Home">🏠</a>
+                    <a href="../../index.html" class="btn-home" title="Home">🏠</a>
                     <h1 data-i18n="title">Video Editor</h1>
                 </div>
                 <div class="header-right">
@@ -106,11 +110,11 @@
                 </div>
             </div>
             <nav class="nav-menu">
-                <a href="index.html" class="nav-link" data-i18n="trim">Trim</a>
-                <a href="crop.html" class="nav-link" data-i18n="crop">Crop</a>
-                <a href="merge.html" class="nav-link active" data-i18n="merge">Merge</a>
-                <a href="sync.html" class="nav-link" data-i18n="sync">Sync</a>
-                <a href="frames.html" class="nav-link" data-i18n="frames">Frames</a>
+                <a href="../../index.html" class="nav-link" data-i18n="trim">Trim</a>
+                <a href="../crop/index.html" class="nav-link" data-i18n="crop">Crop</a>
+                <a href="index.html" class="nav-link active" data-i18n="merge">Merge</a>
+                <a href="../sync/index.html" class="nav-link" data-i18n="sync">Sync</a>
+                <a href="../frames/index.html" class="nav-link" data-i18n="frames">Frames</a>
             </nav>
             <div id="status" class="status-badge" data-i18n="status_init">FFmpeg initializing...</div>
         </header>
@@ -119,35 +123,27 @@
             <section class="upload-area" id="drop-zone">
                 <input type="file" id="uploader" accept="video/mp4" multiple class="hidden">
                 <div class="upload-content">
-                    <span class="upload-icon">↑</span>
+                    <span class="upload-icon">+</span>
                     <p class="upload-label" data-i18n="upload_label_merge">Select MP4 files to merge (Multiple allowed)</p>
                 </div>
             </section>
 
             <section id="editor-container" class="editor-main hidden">
-                <div class="controls-grid" style="grid-template-columns: 1fr;">
-                    <!-- Merge List Card -->
-                    <div class="card">
-                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                            <h3 class="card-title" data-i18n="merge_list_title">Merge List</h3>
-                            <button id="clear-list-btn" class="btn-outline" style="height: 28px; padding: 0 10px; font-size: 0.75rem;" data-i18n="clear_list_btn">Clear All</button>
-                        </div>
-                        <div class="card-content">
-                            <ul id="file-list" class="file-list">
-                                <!-- File items will be added here -->
-                            </ul>
-                            <div id="no-files-msg" class="empty-msg" data-i18n="no_files_msg">No files selected.</div>
-                            
-                            <button id="add-more-btn" class="btn-secondary btn-full" style="margin-top: 16px;">+ Add More Files</button>
+                <div class="card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 class="card-title" data-i18n="merge_list_title">Video List for Merging</h3>
+                        <div style="display: flex; gap: 8px;">
+                            <button id="add-more-btn" class="btn-outline" style="font-size: 0.75rem; padding: 4px 12px;">+ Add More</button>
+                            <button id="clear-list-btn" class="btn-secondary" style="font-size: 0.75rem; padding: 4px 12px; background: var(--destructive); color: white; border: none;" data-i18n="clear_list_btn">Clear List</button>
                         </div>
                     </div>
-
-                    <!-- Actions Card -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title" data-i18n="actions_title">Actions</h3>
-                        </div>
-                        <div class="card-content action-card-content">
+                    <div class="card-content">
+                        <ul id="file-list" class="file-list">
+                            <!-- Files will be listed here -->
+                        </ul>
+                        <p id="no-files-msg" class="empty-msg hidden" data-i18n="no_files_msg">No files selected.</p>
+                        
+                        <div style="margin-top: 24px;">
                             <button id="export-btn" class="btn-primary btn-full" data-i18n="merge_btn">Merge Videos</button>
                         </div>
                     </div>
@@ -174,7 +170,7 @@
                     </div>
                     <a id="download-link" href="#" download="edited.mp4" class="btn-download" data-i18n="download_btn">Download Result</a>
                 </div>
-                </section>
+            </section>
         </main>
         <footer>
             <div class="footer-links">

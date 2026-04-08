@@ -5,7 +5,7 @@
 > **无限免费 + 开源**  
 > **无需注册 · 无广告 · 无水印 · 无数据收集**
 
-[English](README.md) | [한국어](README.ko.md) | [简体中文](README.zh.md) | [日本語](README.ja.md)
+[English](../README.md) | [한국어](README.ko.md) | [简体中文](README.zh.md) | [日本語](README.ja.md)
 
 `Video Editor` 是一款高性能的 MP4 编辑工具，可直接在浏览器中运行，无需上传服务器。由 **FFmpeg.wasm** 提供支持，所有视频处理均在您的设备本地完成，确保快速、安全且无数据泄露。
 

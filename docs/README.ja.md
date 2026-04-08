@@ -5,7 +5,7 @@
 > **無制限無料 + オープンソース**  
 > **会員登録不要 ・ 広告なし ・ ウォーターマークなし ・ データ収集なし**
 
-[English](README.md) | [한국어](README.ko.md) | [简体中文](README.zh.md) | [日本語](README.ja.md)
+[English](../README.md) | [한국어](README.ko.md) | [简体中文](README.zh.md) | [日本語](README.ja.md)
 
 `Video Editor` は、サーバーへのアップロードなしでブラウザ上で即座に動作する高性能な MP4 編集ツールです。 **FFmpeg.wasm** を搭載しており、すべてのビデオ処理がデバイス上でローカルに行われるため、データの流出を心配することなく高速かつ安全に編集できます。
 

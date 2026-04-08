@@ -5,7 +5,7 @@
 > **Unlimited Free + Open Source**  
 > **No Signup · No Ads · No Watermarks · No Data Collection**
 
-[English](README.md) | [한국어](README.ko.md) | [简体中文](README.zh.md) | [日本語](README.ja.md)
+[English](README.md) | [한국어](docs/README.ko.md) | [简体中文](docs/README.zh.md) | [日本語](docs/README.ja.md)
 
 `Video Editor` is a high-performance MP4 editing tool that runs instantly in the browser without server uploads. Powered by **FFmpeg.wasm**, all video processing happens locally on your device, ensuring fast and secure editing without data leakage.
 

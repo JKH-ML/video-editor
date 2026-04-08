@@ -4,54 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Extract Frames from Video | Online Video Editor</title>
-    <meta name="description" content="Extract all frames or specific FPS frames from your MP4 video directly in the browser. High quality PNG extraction.">
-    <script src="coi-serviceworker.js"></script>
-    <link rel="stylesheet" href="style.css">
-    <script src="i18n.js"></script>
+    <script src="../../coi-serviceworker.js"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <script src="../../js/i18n.js"></script>
     <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.0/dist/ffmpeg.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         .frames-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 12px;
+            background: var(--background);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
         }
         .frame-item {
-            position: relative;
             aspect-ratio: 16/9;
-            background: #27272a;
-            border-radius: 8px;
+            background: #000;
+            border-radius: 4px;
             overflow: hidden;
-            border: 1px solid #3f3f46;
+            position: relative;
         }
         .frame-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        .frame-label {
+        .frame-number {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 4px;
+            right: 4px;
             background: rgba(0,0,0,0.6);
             color: white;
             font-size: 10px;
-            padding: 2px 5px;
-            text-align: center;
-        }
-        .download-btn-mini {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(99, 102, 241, 0.8);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 2px 5px;
-            font-size: 10px;
-            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 2px;
         }
     </style>
 </head>
@@ -60,7 +50,7 @@
         <header>
             <div class="header-top">
                 <div class="header-left">
-                    <a href="index.html" class="btn-home" title="Home">🏠</a>
+                    <a href="../../index.html" class="btn-home" title="Home">🏠</a>
                     <h1 data-i18n="title">Video Editor</h1>
                 </div>
                 <div class="header-right">
@@ -74,11 +64,11 @@
                 </div>
             </div>
             <nav class="nav-menu">
-                <a href="index.html" class="nav-link" data-i18n="trim">Trim</a>
-                <a href="crop.html" class="nav-link" data-i18n="crop">Crop</a>
-                <a href="merge.html" class="nav-link" data-i18n="merge">Merge</a>
-                <a href="sync.html" class="nav-link" data-i18n="sync">Sync</a>
-                <a href="frames.html" class="nav-link active" data-i18n="frames">Frames</a>
+                <a href="../../index.html" class="nav-link" data-i18n="trim">Trim</a>
+                <a href="../crop/index.html" class="nav-link" data-i18n="crop">Crop</a>
+                <a href="../merge/index.html" class="nav-link" data-i18n="merge">Merge</a>
+                <a href="../sync/index.html" class="nav-link" data-i18n="sync">Sync</a>
+                <a href="index.html" class="nav-link active" data-i18n="frames">Frames</a>
             </nav>
             <div id="status" class="status-badge" data-i18n="status_init">FFmpeg initializing...</div>
         </header>
@@ -95,14 +85,13 @@
             <section id="editor-container" class="editor-main hidden">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title" data-i18n="frames_settings_title">Frames Extraction Settings</h3>
+                        <h3 class="card-title" data-i18n="frames_settings_title">Frames Extraction</h3>
                     </div>
                     <div class="card-content">
-                        <p style="font-size: 14px; color: #a1a1aa; margin-bottom: 20px;" data-i18n="extracting_msg">Extracting all frames from the video. This may take some time depending on video length.</p>
-                        
-                        <div class="button-group">
-                            <button id="extract-btn" class="btn-primary" data-i18n="extract_btn" style="flex: 1;">Extract All Frames</button>
+                        <div style="margin-bottom: 24px; padding: 16px; background: var(--secondary); border-radius: var(--radius); font-size: 0.875rem;">
+                            <p style="color: var(--muted-foreground); margin-bottom: 8px;" data-i18n="extracting_msg">Analyzing frames... This might take a while for large videos.</p>
                         </div>
+                        <button id="export-btn" class="btn-primary btn-full" data-i18n="extract_btn">Extract All Frames</button>
                     </div>
                 </div>
 
@@ -117,20 +106,33 @@
                     </div>
                 </div>
 
-                <!-- Results -->
-                <div class="card" style="margin-top: 20px;">
+                <div id="frames-result-container" class="card hidden" style="margin-top: 24px;">
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <h3 class="card-title" data-i18n="extracted_frames_title">Extracted Frames</h3>
-                        <button id="download-all-btn" class="btn-secondary hidden" style="height: 28px; padding: 0 10px; font-size: 0.75rem;" data-i18n="download_all_btn">Download All (.zip)</button>
+                        <button id="download-all-btn" class="btn-primary" style="font-size: 0.75rem; padding: 6px 16px;" data-i18n="download_all_btn">Download All Images</button>
                     </div>
                     <div class="card-content">
-                        <div id="frames-container" class="frames-grid">
+                        <div id="frames-grid" class="frames-grid">
                             <!-- Frames will be added here -->
                         </div>
                     </div>
                 </div>
             </section>
         </main>
+        <footer>
+            <div class="footer-links">
+                <a href="https://jkh-ml.github.io/image-editor/" target="_blank" class="btn-footer-tool">
+                    🖼️ Image Editor
+                </a>
+                <a href="https://jkh-ml.github.io/audio-editor/" target="_blank" class="btn-footer-tool">
+                    🎵 Audio Editor
+                </a>
+                <a href="https://github.com/JKH-ML/video-editor" target="_blank" class="btn-repo">
+                    <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    <span data-i18n="repo">GitHub Repository</span>
+                </a>
+            </div>
+        </footer>
     </div>
     <script src="frames.js"></script>
 </body>
