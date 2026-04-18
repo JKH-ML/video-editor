@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio-Video Sync | Online MP4 Video Editor</title>
+    <title>Boomerang Video | Online MP4 Video Editor</title>
     <script src="../../coi-serviceworker.js"></script>
     <link rel="stylesheet" href="../../css/style.css">
     <script src="../../js/i18n.js"></script>
@@ -31,62 +31,43 @@
                 <a href="../../index.html" class="nav-link" data-i18n="trim">Trim</a>
                 <a href="../crop/index.html" class="nav-link" data-i18n="crop">Crop</a>
                 <a href="../merge/index.html" class="nav-link" data-i18n="merge">Merge</a>
-                <a href="index.html" class="nav-link active" data-i18n="sync">Sync</a>
+                <a href="../sync/index.html" class="nav-link" data-i18n="sync">Sync</a>
                 <a href="../frames/index.html" class="nav-link" data-i18n="frames">Frames</a>
-                <a href="../boomerang/index.html" class="nav-link" data-i18n="boomerang">Boomerang</a>
+                <a href="index.html" class="nav-link active" data-i18n="boomerang">Boomerang</a>
             </nav>
             <div id="status" class="status-badge" data-i18n="status_init">FFmpeg initializing...</div>
         </header>
-        
-        <main>
-            <div class="sync-upload-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
-                <section class="upload-area" id="drop-zone-video">
-                    <input type="file" id="video-uploader" accept="video/mp4" class="hidden">
-                    <div class="upload-content">
-                        <span class="upload-icon">🎥</span>
-                        <p class="upload-label" data-i18n="upload_label_sync_video">Select Video File</p>
-                        <div id="video-file-info" class="file-badge hidden">
-                            Video Loaded: <span id="v-duration">0s</span>
-                        </div>
-                    </div>
-                </section>
 
-                <section class="upload-area" id="drop-zone-audio">
-                    <input type="file" id="audio-uploader" accept="audio/*" class="hidden">
-                    <div class="upload-content">
-                        <span class="upload-icon">🎵</span>
-                        <p class="upload-label" data-i18n="upload_label_sync_audio">Select Audio File</p>
-                        <div id="audio-file-info" class="file-badge hidden" style="background: var(--primary); color: white;">
-                            Audio Loaded: <span id="a-duration">0s</span>
-                        </div>
-                    </div>
-                </section>
-            </div>
+        <main>
+            <section class="upload-area" id="drop-zone">
+                <input type="file" id="uploader" accept="video/mp4" class="hidden">
+                <div class="upload-content">
+                    <span class="upload-icon">+</span>
+                    <p class="upload-label" data-i18n="upload_label_boomerang">부메랑으로 만들 비디오를 선택하세요</p>
+                </div>
+            </section>
 
             <section id="editor-container" class="editor-main hidden">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title" data-i18n="sync_settings_title">Sync Settings</h3>
+                        <h3 class="card-title" data-i18n="boomerang_settings_title">부메랑 설정</h3>
                     </div>
                     <div class="card-content">
-                        <div class="sync-info-box" style="background: var(--secondary); padding: 20px; border-radius: var(--radius); margin-bottom: 24px;">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                                <div>
-                                    <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-bottom: 4px;" data-i18n="video_info_label">Video Info</p>
-                                    <p style="font-weight: 600;">Total Frames: <span id="v-frames">0</span></p>
-                                </div>
-                                <div>
-                                    <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-bottom: 4px;">속도 조정 비율</p>
-                                    <p id="target-fps" style="font-weight: 600; color: var(--primary);">-</p>
-                                </div>
-                            </div>
+                        <div class="preview-wrapper" style="margin-bottom: 16px;">
+                            <video id="source-preview" controls style="width:100%; border-radius: var(--radius); background:#000;"></video>
                         </div>
-                        
-                        <button id="export-btn" class="btn-primary btn-full" data-i18n="sync_btn">Sync Video Speed to Audio Length</button>
+
+                        <div style="margin-bottom: 16px;">
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" id="mute-toggle">
+                                <span class="setting-label" data-i18n="boomerang_mute_label">음소거</span>
+                            </label>
+                        </div>
+
+                        <button id="export-btn" class="btn-primary btn-full" data-i18n="boomerang_btn">부메랑 영상 만들기</button>
                     </div>
                 </div>
 
-                <!-- Progress -->
                 <div id="progress-container" class="progress-section hidden">
                     <div class="progress-info">
                         <span id="progress-text" data-i18n="progress_processing">Processing...</span>
@@ -97,18 +78,21 @@
                     </div>
                 </div>
 
-                <!-- Download -->
                 <div id="download-container" class="download-section hidden">
                     <div class="result-preview-card">
-                        <span class="result-preview-title" data-i18n="result_preview">Result Preview</span>
+                        <span class="result-preview-title" data-i18n="result_preview">결과물 미리보기</span>
                         <div class="result-video-wrapper">
-                            <video id="result-video-preview" controls></video>
+                            <video id="result-video-preview" controls loop></video>
                         </div>
                     </div>
-                    <a id="download-link" href="#" download="edited.mp4" class="btn-download" data-i18n="download_btn">Download Result</a>
+                    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                        <button id="re-boomerang-btn" class="btn-outline btn-full" data-i18n="re_boomerang_btn">결과물로 다시 부메랑 만들기</button>
+                        <a id="download-link" href="#" download="boomerang.mp4" class="btn-download" data-i18n="download_btn">결과 다운로드</a>
+                    </div>
                 </div>
             </section>
         </main>
+
         <footer>
             <div class="footer-links">
                 <a href="https://jkh-ml.github.io/image-editor/" target="_blank" class="btn-footer-tool">
@@ -124,6 +108,6 @@
             </div>
         </footer>
     </div>
-    <script src="sync.js"></script>
+    <script src="boomerang.js"></script>
 </body>
 </html>

@@ -61,7 +61,14 @@ const translations = {
         speed_label: "재생 속도",
         mute_label: "음소거",
         format_label: "내보내기 형식",
-        audio_extract_btn: "오디오만 추출 (MP3)"
+        audio_extract_btn: "오디오만 추출 (MP3)",
+        // Boomerang
+        boomerang: "부메랑",
+        boomerang_settings_title: "부메랑 설정",
+        upload_label_boomerang: "부메랑으로 만들 비디오를 선택하세요",
+        boomerang_btn: "부메랑 영상 만들기",
+        boomerang_mute_label: "음소거",
+        re_boomerang_btn: "결과물로 다시 부메랑 만들기"
     },
     en: {
         title: "Video Editor",
@@ -125,7 +132,14 @@ const translations = {
         speed_label: "Playback Speed",
         mute_label: "Mute Audio",
         format_label: "Export Format",
-        audio_extract_btn: "Extract Audio (MP3)"
+        audio_extract_btn: "Extract Audio (MP3)",
+        // Boomerang
+        boomerang: "Boomerang",
+        boomerang_settings_title: "Boomerang Settings",
+        upload_label_boomerang: "Select a video to make into a boomerang",
+        boomerang_btn: "Create Boomerang Video",
+        boomerang_mute_label: "Mute Audio",
+        re_boomerang_btn: "Re-Boomerang from Result"
     },
     zh: {
         title: "视频编辑器",
@@ -189,7 +203,14 @@ const translations = {
         speed_label: "播放速度",
         mute_label: "静音",
         format_label: "导出格式",
-        audio_extract_btn: "仅提取音频 (MP3)"
+        audio_extract_btn: "仅提取音频 (MP3)",
+        // Boomerang
+        boomerang: "回旋镖",
+        boomerang_settings_title: "回旋镖设置",
+        upload_label_boomerang: "选择要制作成回旋镖的视频",
+        boomerang_btn: "创建回旋镖视频",
+        boomerang_mute_label: "静音",
+        re_boomerang_btn: "结果视频再次制作回旋镖"
     },
     ja: {
         title: "ビデオエディター",
@@ -253,7 +274,14 @@ const translations = {
         speed_label: "再生速度",
         mute_label: "ミュート",
         format_label: "書き出し形式",
-        audio_extract_btn: "音声のみ抽出（MP3）"
+        audio_extract_btn: "音声のみ抽出（MP3）",
+        // Boomerang
+        boomerang: "ブーメラン",
+        boomerang_settings_title: "ブーメラン設定",
+        upload_label_boomerang: "ブーメランにする動画を選択してください",
+        boomerang_btn: "ブーメラン動画を作成",
+        boomerang_mute_label: "ミュート",
+        re_boomerang_btn: "結果からもう一度ブーメランを作成"
     }
 };
 
